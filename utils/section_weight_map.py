@@ -1,0 +1,10 @@
+def get_question_weight(key):
+  match key:
+    case 'demographics':
+      return 0.2
+    case 'section1':
+      return 0.5
+    case 'section2':
+      return 0.3
+    case _:
+      return None
