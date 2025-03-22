@@ -6,3 +6,4 @@ pdfplumber
 pandas
 Flask-SQLAlchemy
 mysqlclient
+uwsgi
