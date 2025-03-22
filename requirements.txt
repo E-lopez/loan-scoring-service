@@ -4,3 +4,5 @@ PyPDF2
 py-eureka-client
 pdfplumber
 pandas
+Flask-SQLAlchemy
+mysqlclient
