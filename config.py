@@ -6,7 +6,7 @@ username = 'root'
 password = '%40r00t$usR'
 userpass = 'mysql+mysqldb://' + username + ':' + password + '@'
 server = 'localhost:3306'
-dbname = '/companyservice'
+dbname = '/user_scores'
 
 class Config:
 # create and configure the app
