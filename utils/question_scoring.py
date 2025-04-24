@@ -40,7 +40,7 @@ class Default(Strategy):
 
   def score_question(self, *args, i = 0):
     if(len(self.data) == 0):
-      self.data = {**self.data, **(dict(args[0]))}
+      self.data = {**self.data, **(dict(args[0]['data']))}
     if(i == len(self.data)):
       return self.count
     key = list(self.data)[i]
