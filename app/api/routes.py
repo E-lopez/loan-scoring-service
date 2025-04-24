@@ -4,6 +4,7 @@ from app.extensions import db
 from flask import request, jsonify
 
 from app.models.userScore import UserScore
+from services.amortization_service import repayment_plan
 from services.register_survey_service import register_survey_method
 from app.models.post import Post
 
@@ -16,7 +17,7 @@ def home():
 @bp.route("/drop")
 def temp():
   db.drop_all()
-  return "DRop all method"
+  return "Drop all method"
 
 
 @bp.route("/add", methods=('GET', 'POST'))
@@ -35,3 +36,10 @@ def add_posts():
 def register_survey():
   data = request.get_json()
   return register_survey_method(data)
+
+
+@bp.post("/repayment-plan")
+def generate_table():
+  data = request.get_json()
+  return repayment_plan(data)
+

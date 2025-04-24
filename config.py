@@ -1,7 +1,6 @@
 import os
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-
 username = 'root'
 password = '%40r00t$usR'
 userpass = 'mysql+mysqldb://' + username + ':' + password + '@'

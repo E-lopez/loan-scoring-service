@@ -4,6 +4,7 @@ PyPDF2
 py-eureka-client
 pdfplumber
 pandas
+numpy-financial
 Flask-SQLAlchemy
 mysqlclient
 uwsgi
