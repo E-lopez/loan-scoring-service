@@ -6,7 +6,7 @@ from flask import request, jsonify
 from app.models.userScore import UserScore
 from services.amortization_service import repayment_plan
 from services.register_survey_service import register_survey_method
-from app.models.post import Post
+
 
 @bp.route("/")
 def home():
