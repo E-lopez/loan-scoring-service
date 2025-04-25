@@ -6,6 +6,7 @@ from typing import List
 from venv import logger
 from flask import jsonify
 from datetime import date
+import numpy as np
 import pandas as pd
 import numpy_financial as npf
 
@@ -44,42 +45,39 @@ class Strategy(ABC):
   def generate_table(self, **kwargs: List):
     pass
 
-
-class GenerateByPeriod(Strategy):
-  def generate_table(self, **kwargs):
-    t = {
+  def parse_args(self, **kwargs: List):
+    return {
       k: (lambda k, x=v: cast_value(k, x) if x != 'null' else x)
       (k, v) for k, v in kwargs.items()
     }
-    user_risk, period, amount = itemgetter('user_risk', 'period', 'amount')(t)
-    r = map_risk_to_rate(user_risk)
-
+  
+  def calculate_values(self, r, period, amount):
     rng = pd.date_range(date.today(), periods = period, freq='MS')
     rng.name = "Payment_Date"
-
     df = pd.DataFrame(index=rng,columns=['Payment', 'Principal', 'Interest', 'Balance'], dtype=object)
     df.reset_index(inplace=True)
     df.index.name = "Period"
     df.index += 1
-
     df['Payment'] = npf.pmt(r/12, period, amount)
     df['Principal'] = npf.ppmt(r/12, df.index, period, amount)
     df['Interest'] = npf.ipmt(r/12, df.index, period, amount)
     df['Balance'] = amount + df['Principal'].cumsum()
-
-    df.iloc[:, 1:] = df.iloc[:, 1:].map(lambda x: ceil(abs(x)))
+    df.iloc[:, 1:] = df.iloc[:, 1:].map(lambda x: np.round(abs(x),2))
     return df.to_string()
+
+
+class GenerateByPeriod(Strategy):
+  def generate_table(self, **kwargs):
+    user_risk, period, amount = itemgetter('user_risk', 'period', 'amount')(self.parse_args(**kwargs))
+    r = map_risk_to_rate(user_risk)
+    res = self.calculate_values(r=r, period=period, amount=amount)
+    return res 
 
 
 class GenerateByInstalment(Strategy):
   def generate_table(self, **kwargs):
-    t = {
-      k: (lambda k, x=v: cast_value(k, x) if x != 'null' else x)
-      (k, v) for k, v in kwargs.items()
-    }
-    user_risk, instalment, amount = itemgetter('user_risk', 'instalment', 'amount')(t)
+    user_risk, instalment, amount = itemgetter('user_risk', 'instalment', 'amount')(self.parse_args(**kwargs))
     r = map_risk_to_rate(user_risk)
-
-    res = {}
-
-    return res  
+    period = np.round(npf.nper(r/12, -(instalment), amount))
+    res = self.calculate_values(r=r, period=period, amount=amount)
+    return res
