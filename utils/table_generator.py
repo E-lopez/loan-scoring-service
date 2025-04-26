@@ -63,7 +63,7 @@ class Strategy(ABC):
     df['Interest'] = npf.ipmt(r/12, df.index, period, amount)
     df['Balance'] = amount + df['Principal'].cumsum()
     df.iloc[:, 1:] = df.iloc[:, 1:].map(lambda x: np.round(abs(x),2))
-    return df.to_string()
+    return df.to_dict(orient='records')
 
 
 class GenerateByPeriod(Strategy):
@@ -71,7 +71,7 @@ class GenerateByPeriod(Strategy):
     user_risk, period, amount = itemgetter('user_risk', 'period', 'amount')(self.parse_args(**kwargs))
     r = map_risk_to_rate(user_risk)
     res = self.calculate_values(r=r, period=period, amount=amount)
-    return res 
+    return jsonify(res) 
 
 
 class GenerateByInstalment(Strategy):
@@ -80,4 +80,4 @@ class GenerateByInstalment(Strategy):
     r = map_risk_to_rate(user_risk)
     period = np.round(npf.nper(r/12, -(instalment), amount))
     res = self.calculate_values(r=r, period=period, amount=amount)
-    return res
+    return jsonify(res)
