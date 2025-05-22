@@ -20,9 +20,6 @@ def create_app(config_class=Config):
     # Register blueprints here
     from app.api import bp
     app.register_blueprint(bp)
-
-    @app.route('/test/')
-    def test_page():
-        return '<h1>Testing the Flask Application Factory Pattern</h1>'
+    # Register error handlers here
 
     return app

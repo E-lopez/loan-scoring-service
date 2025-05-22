@@ -1,9 +1,8 @@
 import random
 from app.api import bp
 from app.extensions import db
-from flask import request, jsonify
+from flask import request
 
-from app.models.userScore import UserScore
 from services.amortization_service import repayment_plan
 from services.register_survey_service import register_survey_method
 
@@ -20,18 +19,6 @@ def temp():
   return "Drop all method"
 
 
-@bp.route("/add", methods=('GET', 'POST'))
-def add_posts():
-  scores = UserScore.query.all()
-  print(request.method)
-  if request.method == 'POST':
-    new_score = UserScore(name='Pepito', score=8)
-    db.session.add(new_score)
-    db.session.commit()
-    return 'Score saved correctly'
-  return jsonify([u.toDict() for u in scores])
-
-
 @bp.post("/survey")
 def register_survey():
   data = request.get_json()
@@ -42,4 +29,3 @@ def register_survey():
 def generate_table():
   data = request.get_json()
   return repayment_plan(data)
-
