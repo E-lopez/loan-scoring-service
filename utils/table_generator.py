@@ -71,13 +71,15 @@ class GenerateByPeriod(Strategy):
     user_risk, period, amount = itemgetter('user_risk', 'period', 'amount')(self.parse_args(**kwargs))
     r = map_risk_to_rate(user_risk)
     res = self.calculate_values(r=r, period=period, amount=amount)
-    return jsonify(res) 
+    data = {'data': res, 'rate': r}
+    return jsonify(data) 
 
 
 class GenerateByInstalment(Strategy):
   def generate_table(self, **kwargs):
     user_risk, instalment, amount = itemgetter('user_risk', 'instalment', 'amount')(self.parse_args(**kwargs))
     r = map_risk_to_rate(user_risk)
-    period = np.round(npf.nper(r/12, -(instalment), amount))
+    period = np.round(npf.nper(float(r/12), float(instalment) * -1, float(amount)))
     res = self.calculate_values(r=r, period=period, amount=amount)
-    return jsonify(res)
+    data = {'data': res, 'rate': r}
+    return jsonify(data)
