@@ -7,14 +7,13 @@ from app.extensions import db
 
 from app.models.userScore import UserScore
 from utils.question_scoring import QuestionScoring
-from utils.section_weight_map import get_question_weight   
 
 
 def calc_score(section, values):
   res = {}
   scoring = QuestionScoring(section)
   scoring_res = scoring.use_scoring(values)
-  weight = 0.3 if section == 'demographics' else values['weight']
+  weight = 1 if section == 'demographics' else values['weight']
   res[section] = scoring_res * weight
   return res
 
@@ -22,7 +21,6 @@ def calc_score(section, values):
 def register_survey_method(data):
   id_number = data['demographics']['idNumber']
   parsed_data = {'demographics': {**data['demographics']}, **data['sections']}
-
   t = list(map(lambda x: calc_score(x[0], x[1]), parsed_data.items()))
   scores = {k: v for dict in t for k, v in dict.items()}
   sum_scr = sum(scores.values())
@@ -30,9 +28,16 @@ def register_survey_method(data):
   new_score = UserScore(
     userId = id_number,
     demographics = scores['demographics'],
+    financialResponsibility = scores['financialResponsibility'],
+    riskAversion = scores['riskAversion'],
+    impulsivity = scores['impulsivity'],
+    futureOrientation = scores['futureOrientation'],
     financialKnowledge = scores['financialKnowledge'],
-    riskTolerance = scores['riskTolerance'],
-    trustLevel = scores['trustLevel'],
+    locusOfControl = scores['locusOfControl'],
+    socialInfluence = scores['socialInfluence'],
+    resilience = scores['resilience'],
+    familismo = scores['familismo'],
+    respect = scores['respect'],      
     risk_level = sum_scr
   )
 

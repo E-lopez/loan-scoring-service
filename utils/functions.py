@@ -47,7 +47,7 @@ def map_risk_to_rate(value):
     case value if value >= 5.5 and value < 6.0:
       return 0.24
     case _:
-      return "error"
+      return 0.3
     
 
 def cast_value(key, value):

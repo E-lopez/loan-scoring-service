@@ -42,7 +42,7 @@ class Default(Strategy):
     if(len(self.data) == 0):
       self.data = {**self.data, **(dict(args[0]['data']))}
     if(i == len(self.data)):
-      return self.count
+      return self.count/len(self.data)
     key = list(self.data)[i]
     partial = self.data[key] if type(self.data[key]) == 'int' else 3
     self.count = self.count + partial
@@ -57,12 +57,10 @@ class DemographicsScoring(Strategy):
   def field_score(self, key) -> float:
     data = self.data[key]
     match key:
-      case 'dateOfBirth':
-        return 3.0
       case 'gender':
-        return 3.0 if data == 'M' else 2.0
+        return 5.0 if data == 'F' else 0
       case 'occupation':
-        return 3.0 if data == 'Empleado' else 1.0
+        return 0 if data == 'Desempleado' else 5.0
       case _:
         return 0.0
 
