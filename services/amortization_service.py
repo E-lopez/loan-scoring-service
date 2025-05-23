@@ -36,13 +36,11 @@ def save_amortization(user_id, user_risk, period_value, instalment_value, amount
     return error
   
 
-def handle_amortization(user_id, data):
+def handle_amortization(user_id, user_risk, data):
   user_data = UserAmortizationData.query.filter_by(userId=user_id).first()
-  user_risk = get_user_risk(user_id)
   period_value = data.get('period') if data.get('period') != "null" else 0
   instalment_value = data.get('instalment') if data.get('instalment') != "null" else 0
   amount = data['amount']
-
   if user_data is None:
     save_amortization(user_id, user_risk, period_value, instalment_value, amount)
   else:
@@ -57,7 +55,26 @@ def repayment_plan(data):
   payment_type = data.pop('payment_type')
   user_id = data.pop('userId')
   repayment_type = 'repayment_plan_period' if payment_type == 'period' else 'repayment_plan_instalment'
-  handle_amortization(str(user_id), data)
+  user_risk = get_user_risk(user_id)
+  data['user_risk'] = user_risk
+  handle_amortization(str(user_id), user_risk, data)
   generator = TableGenerator(repayment_type)
   res = generator.use_method(**data)
   return res  
+
+
+def recalculate_plan(user_data):
+  user_risk = user_data.userRisk
+  period_value = user_data.period
+  instalment_value = user_data.instalment
+  amount = user_data.amount
+  repayment_type = 'repayment_plan_period' if period_value != 0 else 'repayment_plan_instalment'
+  data = {
+    'user_risk': user_risk,
+    'period': period_value,
+    'instalment': instalment_value,
+    'amount': amount
+  }
+  generator = TableGenerator(repayment_type)
+  res = generator.use_method(**data)
+  return res
