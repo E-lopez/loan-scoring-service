@@ -38,8 +38,8 @@ def save_amortization(user_id, user_risk, period_value, instalment_value, amount
 
 def handle_amortization(user_id, user_risk, data):
   user_data = UserAmortizationData.query.filter_by(userId=user_id).first()
-  period_value = data.get('period') if data.get('period') != "null" else 0
-  instalment_value = data.get('instalment') if data.get('instalment') != "null" else 0
+  period_value = 0 if data.get('period') is None else data.get('period')
+  instalment_value = 0 if data.get('instalment') is None else data.get('instalment')
   amount = data['amount']
   if user_data is None:
     save_amortization(user_id, user_risk, period_value, instalment_value, amount)
